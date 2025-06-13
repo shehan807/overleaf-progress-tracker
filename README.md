@@ -1,10 +1,10 @@
-# =� Overleaf Progress Tracker
+# 📈 Overleaf Progress Tracker
 
 Automatically track your LaTeX manuscript writing progress with beautiful visualizations and GitHub Actions integration. Perfect for academic papers, theses, and any LaTeX documents managed through Overleaf's GitHub sync.
 
 ![Example Progress Plot](docs/example_plot.png)
 
-## ( Features
+## ✨ Features
 
 - **Automatic Word Counting**: Uses `texcount` (Overleaf's official method) for accurate word counts
 - **Progress Visualization**: Beautiful matplotlib plots showing your writing progress over time
@@ -13,7 +13,7 @@ Automatically track your LaTeX manuscript writing progress with beautiful visual
 - **Easy Setup**: Simple Python script to configure everything
 - **Customizable**: Configure plot styles, categories, and tracking options
 
-## =� Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -56,12 +56,12 @@ That's it! No tokens or complex authentication needed.
 
 Use categorized commit messages to add annotations to your progress plot:
 
-- `Notes: Added introduction section` � =�
-- `Milestone: Completed literature review` � <�
-- `Revisions: Addressed reviewer comments` � 
-- `Progress: Wrote methodology section` � =�
-- `Fix: Corrected equations in section 3` � ='
-- `Reference: Added citations` � =�
+- `Notes: Added introduction section` → 📝
+- `Milestone: Completed literature review` → 🎯
+- `Revisions: Addressed reviewer comments` → ✏️
+- `Progress: Wrote methodology section` → 📈
+- `Fix: Corrected equations in section 3` → 🔧
+- `Reference: Added citations` → 📚
 
 ### Manual Tracking
 
