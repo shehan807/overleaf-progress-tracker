@@ -72,7 +72,7 @@ You can also trigger the tracking manually:
 python .github/scripts/track_progress.py
 ```
 
-## � Configuration
+## Configuration
 
 Edit `.progress-tracker.config` in your manuscript repository:
 
@@ -92,21 +92,21 @@ Edit `.progress-tracker.config` in your manuscript repository:
 }
 ```
 
-## <� How It Works
+## How It Works
 
-1. **Overleaf � GitHub**: When you make changes in Overleaf and sync, it pushes to GitHub
+1. **Overleaf + GitHub**: When you make changes in Overleaf and sync, it pushes to GitHub
 2. **GitHub Actions**: The push triggers the tracking workflow
 3. **Word Counting**: `texcount` analyzes your LaTeX files
 4. **Data Storage**: Progress data is stored in `.progress-data/progress.json`
 5. **Visualization**: matplotlib creates an updated progress plot
 6. **README Update**: The plot is embedded in your repository's README
 
-## =� Example Output
+## Example Output
 
 Your README will automatically include a section like:
 
 ```markdown
-## =� Manuscript Progress
+## Manuscript Progress
 
 ![Progress Tracking](progress_plot.png)
 
@@ -118,7 +118,7 @@ The plot shows:
 - Total words, total change, and average words per commit
 - Categorized commit annotations with dates
 
-## =� Troubleshooting
+## =Troubleshooting
 
 ### Common Issues
 
@@ -146,7 +146,7 @@ cd your-manuscript-repo
 python .github/scripts/track_progress.py --verbose
 ```
 
-## > Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -156,22 +156,20 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## =� License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## =O Acknowledgments
+## Acknowledgments
 
 - Inspired by [latex-progress-tracker](https://github.com/tjburch/latex-progress-tracker)
 - Uses [texcount](https://app.uio.no/ifi/texcount/) for accurate word counting
 - Built with [matplotlib](https://matplotlib.org/) for visualizations
 
-## =� Support
+## Support
 
 - Create an [issue](https://github.com/yourusername/overleaf-progress-tracker/issues) for bugs
 - Start a [discussion](https://github.com/yourusername/overleaf-progress-tracker/discussions) for features
 - Check the [wiki](https://github.com/yourusername/overleaf-progress-tracker/wiki) for advanced usage
 
 ---
-
-Made with d for academic writers everywhere
