@@ -108,9 +108,7 @@ def setup(repo_path):
     gitignore_path = repo_path / '.gitignore'
     gitignore_additions = [
         "\n# Progress Tracker",
-        ".progress-data/",
-        ".progress-tracker.config",
-        "progress_plot.png"
+        ".progress-tracker.config"
     ]
     
     if gitignore_path.exists():
