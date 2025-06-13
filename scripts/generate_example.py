@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Generate an example progress plot for documentation.
+Generate an example progress plot and bullet points for documentation.
 """
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.patches import Rectangle
 import numpy as np
 from datetime import datetime, timedelta
 import json
@@ -37,31 +36,65 @@ def generate_example_data():
         
         word_counts.append(words)
         
-        # Generate commit messages
-        if i % 3 == 0:
-            commits.append({
-                'date': date.isoformat(),
-                'message': f"Milestone: Completed section {i//3 + 1}",
-                'hash': f"abc{i:04d}"
-            })
-        elif i % 3 == 1:
-            commits.append({
-                'date': date.isoformat(),
-                'message': f"Notes: Added figures and tables",
-                'hash': f"def{i:04d}"
-            })
-        else:
-            commits.append({
-                'date': date.isoformat(),
-                'message': f"Revisions: Addressed feedback on methodology",
-                'hash': f"ghi{i:04d}"
-            })
+        # Generate varied commit messages
+        messages = [
+            "Notes: Added introduction and background",
+            "Milestone: Completed literature review", 
+            "Progress: Wrote methodology section",
+            "Notes: Added experimental setup figures",
+            "Revisions: Addressed reviewer comments on theory",
+            "Fix: Corrected equations in section 3",
+            "Reference: Added recent citations",
+            "Progress: Finished results analysis",
+            "Milestone: Completed first draft",
+            "Notes: Added discussion section",
+            "Revisions: Updated abstract and conclusions",
+            "Fix: Corrected table formatting",
+            "Progress: Added appendix materials",
+            "Notes: Improved figure captions",
+            "Milestone: Submitted for review"
+        ]
+        
+        commits.append({
+            'date': date.isoformat(),
+            'message': messages[i % len(messages)],
+            'hash': f"abc{i:04d}"
+        })
     
     return dates, word_counts, commits
 
 
+def generate_example_bullets(commits):
+    """Generate example bullet points for documentation."""
+    categories = {
+        "Notes": {"icon": "📝", "color": "#4CAF50"},
+        "Milestone": {"icon": "🎯", "color": "#FF9800"},
+        "Revisions": {"icon": "✏️", "color": "#F44336"},
+        "Progress": {"icon": "📈", "color": "#2196F3"},
+        "Fix": {"icon": "🔧", "color": "#9C27B0"},
+        "Reference": {"icon": "📚", "color": "#795548"},
+        "Other": {"icon": "•", "color": "#607D8B"}
+    }
+    
+    bullets = ["### Recent Progress", ""]
+    
+    # Show last 8 commits
+    for commit in commits[-8:]:
+        category = commit['message'].split(':')[0]
+        message = commit['message'].split(':', 1)[1].strip()
+        
+        cat_info = categories.get(category, categories['Other'])
+        commit_date = datetime.fromisoformat(commit['date'])
+        date_str = commit_date.strftime('%m/%d/%Y')
+        
+        bullet = f"- {cat_info['icon']} **{category}**: {message} _{date_str}_"
+        bullets.append(bullet)
+    
+    return "\n".join(bullets)
+
+
 def create_example_plot():
-    """Create an example progress plot."""
+    """Create a clean example progress plot."""
     dates, word_counts, commits = generate_example_data()
     
     # Setup plot
@@ -102,53 +135,7 @@ def create_example_plot():
             verticalalignment='top',
             fontsize=10)
     
-    # Add annotations area
-    y_min, y_max = ax.get_ylim()
-    annotation_height = (y_max - y_min) * 0.3
-    annotation_y_start = y_min - annotation_height
-    
-    ax.set_ylim(annotation_y_start, y_max * 1.05)
-    
-    # Add annotation background
-    ax.add_patch(Rectangle((mdates.date2num(dates[0]) - 0.5, annotation_y_start),
-                          mdates.date2num(dates[-1]) - mdates.date2num(dates[0]) + 1,
-                          annotation_height,
-                          facecolor='#f5f5f5',
-                          edgecolor='none',
-                          zorder=0))
-    
-    # Categories
-    categories = {
-        "Notes": {"icon": "📝", "color": "#4CAF50"},
-        "Milestone": {"icon": "🎯", "color": "#FF9800"},
-        "Revisions": {"icon": "✏️", "color": "#F44336"}
-    }
-    
-    # Add some example annotations
-    annotation_y = annotation_y_start + annotation_height * 0.8
-    
-    for i, commit in enumerate(commits[-6:]):  # Show last 6 commits
-        category = commit['message'].split(':')[0]
-        message = commit['message'].split(':', 1)[1].strip()
-        
-        cat_info = categories.get(category, {"icon": "•", "color": "#607D8B"})
-        commit_date = datetime.fromisoformat(commit['date'])
-        
-        annotation_text = f"{cat_info['icon']} {message[:30]}..."
-        date_text = commit_date.strftime('%m/%d')
-        
-        y_pos = annotation_y - (i % 2) * annotation_height * 0.15
-        
-        ax.text(mdates.date2num(commit_date), y_pos,
-               f"{annotation_text} ({date_text})",
-               fontsize=8,
-               color=cat_info['color'],
-               ha='center',
-               va='top',
-               bbox=dict(boxstyle='round,pad=0.3', 
-                       facecolor='white', 
-                       edgecolor=cat_info['color'],
-                       alpha=0.8))
+    # Clean plot without annotations on the figure
     
     # Adjust layout and save
     plt.tight_layout()
@@ -156,6 +143,20 @@ def create_example_plot():
     plt.close()
     
     print("Example plot saved to docs/example_plot.png")
+    
+    # Generate and save example bullet points
+    bullets = generate_example_bullets(commits)
+    with open('../docs/example_bullets.md', 'w') as f:
+        f.write(f"""# Example Progress Section
+
+![Progress Tracking](example_plot.png)
+
+{bullets}
+
+*Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC*
+""")
+    
+    print("Example bullet points saved to docs/example_bullets.md")
 
 
 if __name__ == '__main__':

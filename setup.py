@@ -87,7 +87,6 @@ def setup(repo_path):
         "plot_style": {
             "figure_size": [10, 6],
             "line_color": "#2E86AB",
-            "annotation_height": 2,
             "categories": {
                 "Notes": {"icon": "📝", "color": "#4CAF50"},
                 "Milestone": {"icon": "🎯", "color": "#FF9800"},

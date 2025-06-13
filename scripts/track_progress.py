@@ -11,7 +11,6 @@ from datetime import datetime
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.patches import Rectangle
 import numpy as np
 import re
 
@@ -153,7 +152,6 @@ def load_config(repo_path):
         "plot_style": {
             "figure_size": [10, 6],
             "line_color": "#2E86AB",
-            "annotation_height": 2,
             "categories": {
                 "Notes": {"icon": "📝", "color": "#4CAF50"},
                 "Milestone": {"icon": "🎯", "color": "#FF9800"},
@@ -169,7 +167,7 @@ def load_config(repo_path):
 
 
 def create_progress_plot(data, config, output_file):
-    """Create the progress plot with annotations."""
+    """Create a clean progress plot showing word count over time."""
     if not data['word_counts']:
         print("No data to plot yet")
         return
@@ -220,59 +218,7 @@ def create_progress_plot(data, config, output_file):
                 verticalalignment='top',
                 fontsize=10)
     
-    # Add commit annotations
-    if data.get('commits'):
-        # Group commits by category
-        categories = config['plot_style']['categories']
-        
-        # Calculate annotation area height
-        y_min, y_max = ax.get_ylim()
-        annotation_height = (y_max - y_min) * 0.3
-        annotation_y_start = y_min - annotation_height
-        
-        # Extend y-axis to accommodate annotations
-        ax.set_ylim(annotation_y_start, y_max * 1.05)
-        
-        # Add annotation background
-        ax.add_patch(Rectangle((mdates.date2num(dates[0]) - 0.5, annotation_y_start),
-                              mdates.date2num(dates[-1]) - mdates.date2num(dates[0]) + 1,
-                              annotation_height,
-                              facecolor='#f5f5f5',
-                              edgecolor='none',
-                              zorder=0))
-        
-        # Add annotations
-        annotation_y = annotation_y_start + annotation_height * 0.8
-        line_height = annotation_height * 0.15
-        
-        for i, commit in enumerate(data['commits'][-10:]):  # Show last 10 commits
-            category, message = parse_commit_category(commit['message'])
-            
-            # Skip automated commits
-            if '[skip ci]' in message or 'Update progress tracking' in message:
-                continue
-            
-            cat_info = categories.get(category, categories['Other'])
-            commit_date = datetime.fromisoformat(commit['date'].replace('Z', '+00:00'))
-            
-            # Format annotation text
-            annotation_text = f"{cat_info['icon']} {message[:50]}{'...' if len(message) > 50 else ''}"
-            date_text = commit_date.strftime('%m/%d')
-            
-            # Calculate y position (stagger annotations)
-            y_pos = annotation_y - (i % 3) * line_height
-            
-            # Add annotation
-            ax.text(mdates.date2num(commit_date), y_pos,
-                   f"{annotation_text} ({date_text})",
-                   fontsize=8,
-                   color=cat_info['color'],
-                   ha='center',
-                   va='top',
-                   bbox=dict(boxstyle='round,pad=0.3', 
-                           facecolor='white', 
-                           edgecolor=cat_info['color'],
-                           alpha=0.8))
+    # Clean plot without annotations on the figure
     
     # Adjust layout and save
     plt.tight_layout()
@@ -282,8 +228,43 @@ def create_progress_plot(data, config, output_file):
     print(f"Progress plot saved to {output_file}")
 
 
-def update_readme(repo_path, plot_file):
-    """Update README.md with the progress plot."""
+def generate_commit_bullets(data, config, max_commits=10):
+    """Generate bullet points for recent commits."""
+    if not data.get('commits'):
+        return ""
+    
+    categories = config['plot_style']['categories']
+    bullets = []
+    
+    # Get recent commits (excluding automated ones)
+    recent_commits = []
+    for commit in reversed(data['commits'][-max_commits:]):
+        if '[skip ci]' not in commit['message'] and 'Update progress tracking' not in commit['message']:
+            recent_commits.append(commit)
+    
+    if not recent_commits:
+        return ""
+    
+    bullets.append("### Recent Progress")
+    bullets.append("")
+    
+    for commit in recent_commits[-10:]:  # Show last 10 non-automated commits
+        category, message = parse_commit_category(commit['message'])
+        cat_info = categories.get(category, categories['Other'])
+        
+        # Format commit date
+        commit_date = datetime.fromisoformat(commit['date'].replace('Z', '+00:00'))
+        date_str = commit_date.strftime('%m/%d/%Y')
+        
+        # Create bullet point
+        bullet = f"- {cat_info['icon']} **{category}**: {message} _{date_str}_"
+        bullets.append(bullet)
+    
+    return "\n".join(bullets) + "\n"
+
+
+def update_readme(repo_path, plot_file, data, config):
+    """Update README.md with the progress plot and commit bullets."""
     readme_path = Path(repo_path) / 'README.md'
     
     # Read existing README
@@ -297,11 +278,16 @@ def update_readme(repo_path, plot_file):
     start_marker = "<!-- PROGRESS-TRACKER-START -->"
     end_marker = "<!-- PROGRESS-TRACKER-END -->"
     
+    # Generate bullet points for recent commits
+    bullet_points = generate_commit_bullets(data, config)
+    
     progress_section = f"""
 {start_marker}
 ## 📊 Manuscript Progress
 
 ![Progress Tracking]({plot_file.name})
+
+{bullet_points}
 
 *Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC*
 {end_marker}
@@ -377,7 +363,7 @@ def main():
     create_progress_plot(data, config, plot_file)
     
     # Update README
-    update_readme(repo_path, plot_file)
+    update_readme(repo_path, plot_file, data, config)
 
 
 if __name__ == '__main__':
